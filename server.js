@@ -1,13 +1,13 @@
-var express     = require('express');
-var app         = express();
-var bodyParser  = require('body-parser');
-var morgan      = require('morgan');
-var mongoose    = require('mongoose');
-var passport	  = require('passport');
-var config      = require('./config/database'); // get db config file
-var User        = require('./app/models/user'); // get the mongoose model
-var port 	      = process.env.PORT || 8080;
-var jwt 			  = require('jwt-simple');
+var express     = require('express'),
+    app         = express(),
+    bodyParser  = require('body-parser'),
+    morgan      = require('morgan'),
+    mongoose    = require('mongoose'),
+    passport	  = require('passport'),
+    config      = require('./config/database'), // get db config file
+    User        = require('./app/models/user'), // get the mongoose model
+    port 	      = process.env.PORT || 8080,
+    jwt 			  = require('jwt-simple');
 
 // get our request parameters
 app.use(bodyParser.urlencoded({ extended: false }));
