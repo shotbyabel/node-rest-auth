@@ -1,3 +1,5 @@
+// This defines how PassportJS tries to find a user w/a given jwt_payload.id.
+
 var JwtStrategy = require('passport-jwt').Strategy;
 
 // load up the user model

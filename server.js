@@ -24,12 +24,17 @@ app.get('/', function(req, res) {
   res.send('Hello! The API is at http://localhost:' + port + '/api');
 });
 
+//CONNECT TO DB
 mongoose.connect(config.database);
 
+//pass PASSPORT TO CONFIG
 require('./config/passport')(passport);
 
+//BUNDLE ROUTES
 var apiRoutes = express.Router();
-
+////////////////////////////////////////////////////////////////////////
+///////////////////////////////////////////////////////////////////////
+///CREATE NEW User ACCOUNT(POST http://localhost:8080/api/signup)
 apiRoutes.post('/signup', function(req, res) {
   if (!req.body.name || !req.body.password) {
     res.json({succes: false, msg: 'Please pass name and password.'});
@@ -38,6 +43,7 @@ apiRoutes.post('/signup', function(req, res) {
       name: req.body.name,
       password: req.body.password
     });
+    //SAVE User
     newUser.save(function(err) {
       if (err) {
         res.json({succes: false, msg: 'Username already exists.'});
@@ -48,6 +54,7 @@ apiRoutes.post('/signup', function(req, res) {
   }
 });
 
+//*ROUTE TO AUTHENTICATE User (POST http://localhost:8080/api/authenticate)
 apiRoutes.post('/authenticate', function(req, res) {
   User.findOne({
     name: req.body.name
@@ -57,9 +64,12 @@ apiRoutes.post('/authenticate', function(req, res) {
     if (!user) {
       res.send({success: false, msg: 'Authentication failed. User not found.'});
     } else {
+      //check IF User password matches
       user.comparePassword(req.body.password, function(err, isMatch) {
         if (isMatch && !err) {
+          //IF User is found and password is correct create a token!
           var token = jwt.encode(user, config.secret);
+          //return the info including the token as JSON
           res.json({success: true, token: 'JWT ' + token});
         } else {
           res.send({success: false, msg: 'Authentication failed. Wrong password.'});
@@ -69,6 +79,7 @@ apiRoutes.post('/authenticate', function(req, res) {
   });
 });
 
+//ROUTE to RESTRICTEd info GET http:localhost:8080/api/memeberinfo
 apiRoutes.get('/memberinfo', passport.authenticate('jwt', {session: false}), function(req, res) {
   var token = getToken(req.headers);
   if (token) {
@@ -102,6 +113,7 @@ getToken = function(headers) {
   }
 };
 
+//CONNECT THE API ROUTES UNDER /api/*
 app.use('/api', apiRoutes);
 
 // Start the server
